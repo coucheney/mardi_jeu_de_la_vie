@@ -11,6 +11,7 @@
 # import des modules
 
 import tkinter as tk
+import copy
 
 
 #####################
@@ -18,9 +19,23 @@ import tkinter as tk
 
 HAUTEUR = 400
 LARGEUR = 600
-COULEUR_FOND = "grey60"
-COTE = 10
+COTE = 20
+NB_COL = LARGEUR // COTE
+NB_LIG = HAUTEUR // COTE
+
 COULEUR_QUADR = "grey20"
+COULEUR_FOND = "grey60"
+COULEUR_CARRE = "yellow"
+
+
+
+######################
+# variables globales
+
+# liste à deux dimensions telle que tableau[i][j] vaut 0 si la case (i, j) est morte
+# et vaut l'identifiant du carré dessiné à la case (i, j) sinon
+tableau = []
+
 
 
 ###################
@@ -39,19 +54,56 @@ def quadrillage():
         i += 1
 
 
-def xy_to_cl(x, y):
+def xy_to_ij(x, y):
     """Retourne la colonne et la ligne correspondant au point du canevas de coordonnées (x,y)"""
-    pass
+    return x // COTE, y // COTE
 
 
 def change_carre(event):
     """Change la couleur du carre à la position (event.x, event.y)"""
-    pass
+    i, j = xy_to_ij(event.x, event.y)
+    if tableau[i][j] == 0:
+        x = i * COTE
+        y = j * COTE
+        carre = canvas.create_rectangle((x, y), (x + COTE, y + COTE), fill=COULEUR_CARRE, outline=COULEUR_QUADR)
+        tableau[i][j] = carre
+    else:
+        canvas.delete(tableau[i][j])
+        tableau[i][j] = 0
+
+
+def nb_vivant(i, j):
+    """Retourner le nombre de cases voisines vivantes de la case de coordonnées (i, j)"""
+    return 0
+
+
+def etape_ij():
+    """Fait une étape du jeu de la vie pour la case de coordonnées (i, j):
+    retourne la nouvelle valeur à mettre dans le tableau
+    """
+    return 0
+
+
+def etape():
+    """Fait une étape du jeu de la vie"""
+    global tableau
+    # copie du tableau
+    tableau_res = copy.deepcopy(tableau)
+    # traiter toutes les cases du tableau
+    for i in range(NB_LIG):
+        for j in range(NB_COL):
+            tableau_res[i][j] = etape_ij()
+    # on modifie le tableau global
+    tableau = tableau_res
+
 
 
 
 #####################
 # programme principal
+
+for i in range(NB_LIG):
+    tableau.append([0] * NB_COL)
 
 racine = tk.Tk()
 racine.title("Jeu de la vie")
