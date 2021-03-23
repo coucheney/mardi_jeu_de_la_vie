@@ -74,25 +74,45 @@ def change_carre(event):
 
 def nb_vivant(i, j):
     """Retourner le nombre de cases voisines vivantes de la case de coordonnées (i, j)"""
-    return 0
+    cpt = 0
+    for k in range(max(0,i-1), min(NB_COL, i+2)):
+        for el in range(max(0, j-1), min(NB_LIG, j+2)):
+            if tableau[k][el] != 0 and [k,el] != [i,j]:
+                cpt += 1
+    return cpt
 
 
-def etape_ij():
+def etape_ij(i, j):
     """Fait une étape du jeu de la vie pour la case de coordonnées (i, j):
     retourne la nouvelle valeur à mettre dans le tableau
     """
-    return 0
+    n = nb_vivant(i, j)
+    if tableau[i][j] == 0:
+        # si la case est morte
+        if n == 3:
+            x = i * COTE
+            y = j * COTE
+            return canvas.create_rectangle((x, y), (x + COTE, y + COTE), fill=COULEUR_CARRE, outline=COULEUR_QUADR)
+        else:
+            return 0
+    else:
+        # si la case est vivante
+        if n == 3 or n == 2:
+            return tableau[i][j]
+        else:
+            canvas.delete(tableau[i][j])
+            return 0
 
 
-def etape():
+def etape(event):
     """Fait une étape du jeu de la vie"""
     global tableau
     # copie du tableau
     tableau_res = copy.deepcopy(tableau)
     # traiter toutes les cases du tableau
-    for i in range(NB_LIG):
-        for j in range(NB_COL):
-            tableau_res[i][j] = etape_ij()
+    for i in range(NB_COL):
+        for j in range(NB_LIG):
+            tableau_res[i][j] = etape_ij(i, j)
     # on modifie le tableau global
     tableau = tableau_res
 
@@ -102,8 +122,8 @@ def etape():
 #####################
 # programme principal
 
-for i in range(NB_LIG):
-    tableau.append([0] * NB_COL)
+for i in range(NB_COL):
+    tableau.append([0] * NB_LIG)
 
 racine = tk.Tk()
 racine.title("Jeu de la vie")
@@ -116,6 +136,7 @@ canvas.grid(row=0)
 
 # liaison des événements
 canvas.bind("<Button-1>", change_carre)
+racine.bind("n", etape)
 
 
 quadrillage()
