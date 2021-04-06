@@ -37,7 +37,6 @@ COULEUR_CARRE = "yellow"
 tableau = []
 
 
-
 ###################
 # fonctions
 
@@ -117,6 +116,38 @@ def etape(event):
     tableau = tableau_res
 
 
+def charger():
+    """charger la grille depuis le fichier sauvegarde.txt"""
+    global tableau
+    fic = open("sauvegarde.txt", "r")
+    j = 0
+    for ligne in fic:
+        i = 0
+        val = ligne.split()
+        for e in val:
+            if e == "0":
+                tableau[i][j] = 0
+            else:
+                x = i * COTE
+                y = j * COTE
+                carre = canvas.create_rectangle((x, y), (x + COTE, y + COTE), fill=COULEUR_CARRE, outline=COULEUR_QUADR)
+                tableau[i][j] = carre 
+            i += 1
+        j += 1
+    fic.close()
+
+
+def sauvegarder():
+    """sauvegarder la grille vers le fichier sauvegarde.txt"""
+    fic = open("sauvegarde.txt", "w")
+    for j in range(NB_LIG):
+        for i in range(NB_COL):
+            if tableau[i][j] == 0:
+                fic.write("0 ")
+            else:
+                fic.write("1 ")
+        fic.write("\n")
+    fic.close()
 
 
 #####################
@@ -130,18 +161,21 @@ racine.title("Jeu de la vie")
 
 # création des widgets
 canvas = tk.Canvas(racine, width=LARGEUR, height=HAUTEUR, bg=COULEUR_FOND)
+quadrillage()
 
-# placement des widgets
-canvas.grid(row=0)
 
 # liaison des événements
 canvas.bind("<Button-1>", change_carre)
 racine.bind("n", etape)
 
+# boutons
+bout_charger = tk.Button(racine, text="charger", command=charger)
+bout_sauv = tk.Button(racine, text="sauvegarder", command=sauvegarder)
 
-quadrillage()
-
-
+# placement des widgets
+canvas.grid(row=0, rowspan=2)
+bout_charger.grid(row=0, column=1)
+bout_sauv.grid(row=1, column=1)
 
 racine.mainloop()
 
